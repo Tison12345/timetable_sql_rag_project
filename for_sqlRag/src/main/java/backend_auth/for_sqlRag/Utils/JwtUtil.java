@@ -13,16 +13,28 @@ import java.util.Date;
 @Component
 public class JwtUtil {
         private final String SECRET= "PreethamPistahBadamParuppuChennaikaraveerasuura";
-        private final long EXPIRATION =1000*60*60*24;
+        private final long ACCESSEXPIRATION =1000*60*15;
+        private final long REFRESHEXPIRATION =1000*60*60*24*7;
+
 
         private final Key secretKey= Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-        public String generateToken(String email)
+        public String generateAccessToken(String email)
         {
             return Jwts.builder()
                     .setSubject(email)
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION))
+                    .setExpiration(new Date(System.currentTimeMillis()+ACCESSEXPIRATION))
+                    .signWith(secretKey, SignatureAlgorithm.HS256)
+                    .compact();
+        }
+
+        public String generateRefreshToken(String email)
+        {
+            return Jwts.builder()
+                    .setSubject(email)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis()+REFRESHEXPIRATION))
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();
         }

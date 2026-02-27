@@ -3,17 +3,20 @@ package backend_auth.for_sqlRag.Controller;
 import backend_auth.for_sqlRag.Service.UserService;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
 import backend_auth.for_sqlRag.models.Users;
-import jakarta.persistence.Id;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -28,7 +31,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String,String> user)
+    public ResponseEntity<String> register(@RequestBody Map<String, String> user)
     {
         // get the email from map
         // hash the password
@@ -43,9 +46,6 @@ public class AuthController {
             return new ResponseEntity<>("Already User Present",HttpStatus.CONFLICT);
         }
         userService.registerUser(Users.builder().email(email).password(hashedPassword).build());
-        System.out.println("hi");
-        Users userRegister=userService.getUser(email).get();
-//        System.out.println(userRegister.getId());
 
         return new ResponseEntity<>("Successfully Registered",HttpStatus.OK);
     }
@@ -66,9 +66,67 @@ public class AuthController {
         if(!passwordEncoder.matches(hashedPassword, userRegister.getPassword())){
             return new ResponseEntity<>("Invalid password",HttpStatus.NOT_FOUND);
         }
-        long Id=userService.getUser(email).get().getId();
-        String accessToken=jwtUtil.generateToken(email);
-        String refreshToken = jwtUtil.generateToken(Long.toString(Id));
-        return new ResponseEntity<>(Map.of("accessToken",accessToken,"refreshToken",refreshToken,"info","successfull login"),HttpStatus.OK);
+        String accessToken=jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessCookie", accessToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(Duration.ofMinutes(15))
+                .sameSite("Lax")
+                .secure(false)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshCookie", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(Duration.ofDays(7))
+                .sameSite("Lax")
+                .secure(false)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body("Login Successful");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> generateRefresh(HttpServletRequest request)
+    {
+       String refreshToken=null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshCookie".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                }
+            }
+        }
+        if(refreshToken==null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!jwtUtil.validateJwtToken(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if(refreshToken!=null && jwtUtil.validateJwtToken(refreshToken))
+        {
+            String accessToken=jwtUtil.generateAccessToken(jwtUtil.extractEmail(refreshToken));
+            ResponseCookie accessCookie = ResponseCookie.from("accessCookie", accessToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(Duration.ofMinutes(15))
+                    .sameSite("Lax")
+                    .secure(false)
+                    .build();
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,accessCookie.toString()).build();
+        }
+        else{
+            return new  ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
     }
 }

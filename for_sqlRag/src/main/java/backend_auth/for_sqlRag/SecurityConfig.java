@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,16 +35,20 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) ;
 
 
         return http.build();
     }
-
+    @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration=new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
         corsConfiguration.setAllowedMethods(List.of("GET","POST","DELETE","PUT"));
 
         UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
