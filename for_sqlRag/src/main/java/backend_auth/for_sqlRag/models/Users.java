@@ -18,13 +18,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Users {
-
     @Id
     @GeneratedValue
-    Long id;
+    private long id;
     @Email
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@iiitdwd\\.ac\\.in$",message = "Use your college Mail")
-    String email;
+    private String email;
     @Size(min = 8)
-    String password;
+    private String password;
 }

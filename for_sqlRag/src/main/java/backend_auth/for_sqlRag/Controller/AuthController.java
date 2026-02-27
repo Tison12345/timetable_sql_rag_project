@@ -3,6 +3,7 @@ package backend_auth.for_sqlRag.Controller;
 import backend_auth.for_sqlRag.Service.UserService;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
 import backend_auth.for_sqlRag.models.Users;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -23,6 +25,7 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Map<String,String> user)
@@ -41,11 +44,13 @@ public class AuthController {
         }
         userService.registerUser(Users.builder().email(email).password(hashedPassword).build());
         System.out.println("hi");
+        Users userRegister=userService.getUser(email).get();
+//        System.out.println(userRegister.getId());
 
         return new ResponseEntity<>("Successfully Registered",HttpStatus.OK);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String,String> user)
     {
         String email= user.get("email");
@@ -61,7 +66,9 @@ public class AuthController {
         if(!passwordEncoder.matches(hashedPassword, userRegister.getPassword())){
             return new ResponseEntity<>("Invalid password",HttpStatus.NOT_FOUND);
         }
-        String token=jwtUtil.generateToken(email);
-        return new ResponseEntity<>(token,HttpStatus.OK);
+        long Id=userService.getUser(email).get().getId();
+        String accessToken=jwtUtil.generateToken(email);
+        String refreshToken = jwtUtil.generateToken(Long.toString(Id));
+        return new ResponseEntity<>(Map.of("accessToken",accessToken,"refreshToken",refreshToken,"info","successfull login"),HttpStatus.OK);
     }
 }
