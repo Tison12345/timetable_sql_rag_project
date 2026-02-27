@@ -21,13 +21,17 @@ export default function LoginPage() {
     axios.post(url,{
         email:email,
         password:password
+    },{
+      withCredentials:true
     }).then((response)=>{
-        setMsg(response.data["info"]);
-        localStorage.setItem("accesstoken",response.data["accessToken"]);
-        localStorage.setItem("refreshtoken",response.data["refreshToken"]);
+        setMsg(response.data);
+        console.log(response.data);
+        router.push("/");
+        
         router.push("/");
     }).catch((error)=>{
-        setMsg(error.response.data["error"]);
+      console.log(error.data);
+        setMsg(error.data);
     });
   };
 
