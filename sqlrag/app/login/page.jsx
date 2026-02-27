@@ -26,9 +26,9 @@ export default function LoginPage() {
     }).then((response)=>{
         setMsg(response.data);
         console.log(response.data);
-        router.push("/");
+       
         
-        router.push("/");
+        router.push("/chat");
     }).catch((error)=>{
       console.log(error.data);
         setMsg(error.data);

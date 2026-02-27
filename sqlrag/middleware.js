@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  const token = request.cookies.get("accessToken")?.value;
+  const accessToken = request.cookies.get("accessCookie")?.value;
+  const refreshToken = request.cookies.get("refreshCookie")?.value;
   const { pathname } = request.nextUrl;
 
-  // 1️⃣ Block logged-in users from login/register
-  if (token && (pathname === "/login" || pathname === "/register" || pathname === "/")) {
-    return NextResponse.redirect(new URL("/chat", request.url));
+  // 🔒 ProtectedRoute equivalent
+  if (!accessToken && !refreshToken && pathname.startsWith("/chat")) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 2️⃣ Block non-logged-in users from protected routes
-  if (!token && pathname.startsWith("/chat")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // 🌐 PublicRoute equivalent
+  if ((accessToken || refreshToken) && (pathname === "/login" || pathname === "/register")) {
+    return NextResponse.redirect(new URL("/chat", request.url));
   }
 
   return NextResponse.next();
