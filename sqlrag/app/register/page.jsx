@@ -22,10 +22,11 @@ export default function RegisterPage() {
     }).then((res)=>{
         
         setMsg(res.data);
+        console.log(res.data);
         router.push("/login");
     }).catch((err)=>{
-       
-        setMsg(err.data);
+        console.log(err.response.data);
+        setMsg(err.response.data);
     })
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
@@ -42,7 +43,7 @@ export default function RegisterPage() {
       <main className="card">
         
 
-        <h1 className="title">{msg}</h1>
+        <h1 className="title text-red-600">{msg}</h1>
         <p className="sub">Begin your journey today</p>
 
         <form onSubmit={handleSubmit}>
