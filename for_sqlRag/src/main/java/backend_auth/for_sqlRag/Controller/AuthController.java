@@ -1,13 +1,15 @@
 package backend_auth.for_sqlRag.Controller;
 
-import backend_auth.for_sqlRag.Service.UserService;
+import backend_auth.for_sqlRag.Service.Imp.GoogleTokenService;
+import backend_auth.for_sqlRag.Service.Imp.UserService;
+import backend_auth.for_sqlRag.Utils.CookieGenerator;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
 import backend_auth.for_sqlRag.models.Users;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -16,7 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 @RestController
@@ -28,10 +31,12 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final GoogleTokenService googleTokenService;
+    private final CookieGenerator cookieGenerator;
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, String> user)
+    public ResponseEntity<String> register(@Valid @RequestBody Map<String, String> user)
     {
         // get the email from map
         // hash the password
@@ -43,7 +48,7 @@ public class AuthController {
 
         if(userService.isUserExist(email))
         {
-            return new ResponseEntity<>("Already User Present",HttpStatus.CONFLICT);
+            return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
         }
         userService.registerUser(Users.builder().email(email).password(hashedPassword).build());
 
@@ -69,23 +74,9 @@ public class AuthController {
         String accessToken=jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
 
-        ResponseCookie accessCookie = ResponseCookie.from("accessCookie", accessToken)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(Duration.ofMinutes(15))
-                .sameSite("Lax")
-                .secure(false)
-                .build();
+        ResponseCookie accessCookie= cookieGenerator.createAccessCookie(accessToken);
 
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshCookie", refreshToken)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(Duration.ofDays(7))
-                .sameSite("Lax")
-                .secure(false)
-                .build();
+        ResponseCookie refreshCookie=cookieGenerator.createRefreshCookie(refreshToken);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
@@ -115,18 +106,47 @@ public class AuthController {
         if(refreshToken!=null && jwtUtil.validateJwtToken(refreshToken))
         {
             String accessToken=jwtUtil.generateAccessToken(jwtUtil.extractEmail(refreshToken));
-            ResponseCookie accessCookie = ResponseCookie.from("accessCookie", accessToken)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(Duration.ofMinutes(15))
-                    .sameSite("Lax")
-                    .secure(false)
-                    .build();
+            ResponseCookie accessCookie = cookieGenerator.createAccessCookie(accessToken);
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,accessCookie.toString()).build();
         }
         else{
             return new  ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @PostMapping("/google/token")
+    public ResponseEntity<?> getToken(@RequestBody Map<String,String> body) throws GeneralSecurityException, IOException {
+        String token=body.get("token");
+
+        if(token==null)
+        {
+            return new ResponseEntity<>("Login failed",HttpStatus.UNAUTHORIZED);
+
+        }
+        GoogleIdToken.Payload payload = googleTokenService.verify(token);
+
+        if (payload == null || !payload.getEmailVerified()) {
+            return new ResponseEntity<>("Invalid Google login", HttpStatus.UNAUTHORIZED);
+        }
+
+        String email = payload.getEmail();
+//        String provider_id=payload.geti
+        if(email!=null && !email.endsWith("iiitdwd.ac.in")){
+            return new ResponseEntity<>("Invalid email Use your College email",HttpStatus.BAD_REQUEST);
+        }
+
+        ResponseCookie accessCookie=cookieGenerator.createAccessCookie(jwtUtil.generateAccessToken(email));
+
+
+
+
+
+        ResponseCookie refreshCookie=cookieGenerator.createRefreshCookie(jwtUtil.generateRefreshToken(email));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body("Login Successful");
+
+
     }
 }

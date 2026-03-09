@@ -7,6 +7,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -47,16 +49,22 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         }
-
-        if(accessToken!=null && jwt.validateJwtToken(accessToken))
+        if(accessToken==null || !jwt.validateJwtToken(accessToken))
         {
-            String email= jwt.extractEmail(accessToken);
-            var auth=new UsernamePasswordAuthenticationToken(email,null, List.of());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT token");
+            return;
         }
 
-
+        String email= jwt.extractEmail(accessToken);
+        var auth=new UsernamePasswordAuthenticationToken(email,null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
         filterChain.doFilter(request,response);
+
+
+
+
+
     }
 
 }

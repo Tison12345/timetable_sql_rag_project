@@ -1,5 +1,6 @@
 package backend_auth.for_sqlRag;
 
+import backend_auth.for_sqlRag.RateLimiter.RateLimitingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter) throws Exception
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter,RateLimitingFilter rateLimitingFilter) throws Exception
     {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -38,7 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) ;
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter,JwtFilter.class) ;
 
 
         return http.build();

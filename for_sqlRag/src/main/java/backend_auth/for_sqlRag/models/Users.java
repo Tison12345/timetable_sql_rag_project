@@ -26,4 +26,7 @@ public class Users {
     private String email;
     @Size(min = 8)
     private String password;
+    private String provider;
+    private String provider_id;
+    private Boolean isVerified;
 }
