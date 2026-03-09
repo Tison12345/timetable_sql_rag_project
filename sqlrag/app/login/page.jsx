@@ -53,9 +53,7 @@ export default function LoginPage() {
 
   function handleCredentialResponse(response) {
     const token = response.credential;
-    console.log("Google ID Token:", token);
-    console.log(url)
-    console.log(process.env.NEXT_PUBLIC_BACKENDURL);
+    
     
      axios.post(url, { token }, { withCredentials: true })
       .then(() =>{
@@ -92,7 +90,7 @@ export default function LoginPage() {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
-
+    console.log("login clicked")
     axios.post(url, {
       email: email,
       password: password,

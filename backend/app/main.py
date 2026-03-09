@@ -8,7 +8,7 @@ app = FastAPI()
 # 🔥 Allow frontend to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # later restrict in production
+    allow_origins=["http://localhost:8080"],  # later restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,7 +18,8 @@ class Query(BaseModel):
     question: str
 
 
-@app.post("/ask")
+@app.post("/process")
 def ask(query: Query):
     response = ask_question(query.question)
     return response
+

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
+import api from "../../lib/apiclient";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -14,28 +16,38 @@ export default function Home() {
     "What is my last class today?",
     "Which rooms are used today?"
   ];
-
+  const url=`${process.env.NEXT_PUBLIC_BACKENDURL}/chat/ask`
   const askBackend = async () => {
     if (!question) return;
 
     setLoading(true);
     setResponse(null);
 
-    try {
-      const res = await fetch("http://127.0.0.1:8000/ask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ question }),
-      });
-
-      const data = await res.json();
-      setResponse(data);
-    } catch (error) {
-      console.error(error);
-      alert("Error connecting to backend");
-    }
+    axios
+      .post(url, { question },{
+        withCredentials: true,
+      })
+      .then((res) => {
+        setResponse(res.data);
+        
+      })
+      .catch((error) => {
+        
+        if (error.response && error.response.status === 401) {
+          axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/refresh`, {}, { withCredentials: true })
+            .then(() => {
+              axios.post(url, { question }, { withCredentials: true })
+                .then((res) => {
+                  setResponse(res.data);
+                 
+                })
+                .catch((err) => {
+                  console.error("Error after refresh:", err);
+                });
+            })
+            
+        }
+      }); 
 
     setLoading(false);
   };
