@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
-import api from "../../lib/apiclient";
+
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -17,40 +17,28 @@ export default function Home() {
     "Which rooms are used today?"
   ];
   const url=`${process.env.NEXT_PUBLIC_BACKENDURL}/chat/ask`
+
+  
   const askBackend = async () => {
-    if (!question) return;
+  if (!question) return;
 
-    setLoading(true);
-    setResponse(null);
+  setLoading(true);
+  setResponse(null);
 
-    axios
-      .post(url, { question },{
-        withCredentials: true,
-      })
-      .then((res) => {
-        setResponse(res.data);
-        
-      })
-      .catch((error) => {
-        
-        if (error.response && error.response.status === 401) {
-          axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/refresh`, {}, { withCredentials: true })
-            .then(() => {
-              axios.post(url, { question }, { withCredentials: true })
-                .then((res) => {
-                  setResponse(res.data);
-                 
-                })
-                .catch((err) => {
-                  console.error("Error after refresh:", err);
-                });
-            })
-            
-        }
-      }); 
+  try {
+    const res = await axios.post(url, { question }, { withCredentials: true });
+    setResponse(res.data);
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/refresh`, {}, { withCredentials: true });
 
-    setLoading(false);
-  };
+      const retry = await axios.post(url, { question }, { withCredentials: true });
+      setResponse(retry.data);
+    }
+  }
+
+  setLoading(false);
+};
 
   const handleQuickQuery = (query) => {
     setQuestion(query);

@@ -53,11 +53,14 @@ export default function LoginPage() {
 
   function handleCredentialResponse(response) {
     const token = response.credential;
-    
+     console.log("Sending token to backend for verification...");
+    console.log("Google token received:", token);
+    console.log("Sending token to backend for verification...");
     
      axios.post(url, { token }, { withCredentials: true })
       .then(() =>{
         console.log("Google login successful")
+
         router.push("/chat");
       })
       .catch((err) => console.log(err.response.data));
