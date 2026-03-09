@@ -26,7 +26,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter,RateLimitingFilter rateLimitingFilter) throws Exception
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter) throws Exception
     {
         http
                 .csrf(AbstractHttpConfigurer::disable)

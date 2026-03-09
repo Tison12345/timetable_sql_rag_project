@@ -15,14 +15,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> catchError(ConstraintViolationException ex) {
 
-        Map<String,String> errors = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
+        String field = null;
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            String field = violation.getPropertyPath().toString();
+            field = violation.getPropertyPath().toString();
             String message = violation.getMessage();
             errors.put(field, message);
         }
+//        System.out.println(errors);
 
-        return new ResponseEntity<>("Use Your College Mail", HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(errors.get(field), HttpStatus.BAD_REQUEST);
     }
 }

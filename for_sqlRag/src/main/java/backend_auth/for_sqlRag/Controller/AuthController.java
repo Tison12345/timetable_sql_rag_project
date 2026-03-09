@@ -50,7 +50,7 @@ public class AuthController {
         {
             return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
         }
-        userService.registerUser(Users.builder().email(email).password(hashedPassword).build());
+        userService.registerUser(Users.builder().email(email).password(hashedPassword).isVerified(false).provider_id("null").provider("local").build());
 
         return new ResponseEntity<>("Successfully Registered",HttpStatus.OK);
     }
@@ -128,20 +128,26 @@ public class AuthController {
         if (payload == null || !payload.getEmailVerified()) {
             return new ResponseEntity<>("Invalid Google login", HttpStatus.UNAUTHORIZED);
         }
+        System.out.println(payload);
 
         String email = payload.getEmail();
-//        String provider_id=payload.geti
+
+
         if(email!=null && !email.endsWith("iiitdwd.ac.in")){
             return new ResponseEntity<>("Invalid email Use your College email",HttpStatus.BAD_REQUEST);
         }
 
+
+        if (!userService.isUserExist(email))
+        {
+            String provider_id=(String) payload.get("sub");
+            boolean isverified=payload.getEmailVerified();
+            userService.registerUser(Users.builder().email(email).password("usedgoogle").provider("google").provider_id(provider_id).isVerified(isverified).build());
+        }
+
         ResponseCookie accessCookie=cookieGenerator.createAccessCookie(jwtUtil.generateAccessToken(email));
-
-
-
-
-
         ResponseCookie refreshCookie=cookieGenerator.createRefreshCookie(jwtUtil.generateRefreshToken(email));
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
