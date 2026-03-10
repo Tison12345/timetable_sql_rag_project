@@ -1,9 +1,11 @@
 package backend_auth.for_sqlRag.Controller;
 
+import backend_auth.for_sqlRag.Service.Imp.EmailServiceImp;
 import backend_auth.for_sqlRag.Service.Imp.GoogleTokenService;
 import backend_auth.for_sqlRag.Service.Imp.UserService;
 import backend_auth.for_sqlRag.Utils.CookieGenerator;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
+import backend_auth.for_sqlRag.models.EmailDetails;
 import backend_auth.for_sqlRag.models.Users;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import jakarta.servlet.http.Cookie;
@@ -33,6 +35,8 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final GoogleTokenService googleTokenService;
     private final CookieGenerator cookieGenerator;
+    private final EmailServiceImp emailServiceImp;
+
 
 
     @PostMapping("/register")
@@ -48,7 +52,11 @@ public class AuthController {
 
         if(userService.isUserExist(email))
         {
-            return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
+            if(userService.isVerified(email))
+            {
+                return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
+            }
+
         }
         userService.registerUser(Users.builder().email(email).password(hashedPassword).isVerified(false).provider_id("null").provider("local").build());
 
@@ -66,10 +74,17 @@ public class AuthController {
             return new ResponseEntity<>("User not registered",HttpStatus.UNAUTHORIZED);
         }
 
+
         Users userRegister=userService.getUser(email).get();
 
         if(!passwordEncoder.matches(hashedPassword, userRegister.getPassword())){
             return new ResponseEntity<>("Invalid password",HttpStatus.NOT_FOUND);
+        }
+        if(!userService.isVerified(email))
+        {
+//            emailDetails.builder().receiverEmail(email).token(generateVerificationToken.generateVerificationToken()).build();
+//            emailServiceImp.sendEmail(emailDetails);
+            return new ResponseEntity<>("Email Not verified",HttpStatus.UNAUTHORIZED);
         }
         String accessToken=jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
@@ -154,5 +169,20 @@ public class AuthController {
                 .body("Login Successful");
 
 
+    }
+
+    @PostMapping("/verify-Email")
+    public ResponseEntity<?> verifyEmail(@RequestParam String email)
+    {
+        EmailDetails emailDetails=new EmailDetails();
+
+//       emailDetails.builder().token(generateVerificationToken.generateVerificationToken()).receiverEmail(email).build();
+//       return emailServiceImp.sendEmail(emailDetails);
+        return null;
+    }
+
+    @GetMapping("/verify-token")
+    public ResponseEntity<?> getToken(@RequestParam String token){
+   return null;
     }
 }

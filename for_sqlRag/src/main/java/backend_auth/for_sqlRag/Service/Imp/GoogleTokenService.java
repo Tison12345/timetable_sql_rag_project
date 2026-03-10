@@ -4,16 +4,19 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+
 @Service
 public class GoogleTokenService {
 
-    private static final String GoogleClientId="1011757238042-f866dokep98e8vtuvemog9mf0rcaml0j.apps.googleusercontent.com";
+    @Value("${google.client.id}")
+    private  String GoogleClientId;
 
 
     public GoogleIdToken.Payload verify(String googleIdToken) throws GeneralSecurityException, IOException {
