@@ -14,7 +14,8 @@ export default function LoginPage() {
   const [msg, setMsg] = useState("Welcome back");
   const [googleReady, setGoogleReady] = useState(false);
 
-    const url=`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/google/token`;
+    const googleurl=`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/google/token`;
+    const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/login`;
   const router = useRouter();
 
   // Load Google GSI script once on mount
@@ -57,7 +58,7 @@ export default function LoginPage() {
     console.log("Google token received:", token);
     console.log("Sending token to backend for verification...");
     
-     axios.post(url, { token }, { withCredentials: true })
+     axios.post(googleurl, { token }, { withCredentials: true })
       .then(() =>{
         console.log("Google login successful")
 

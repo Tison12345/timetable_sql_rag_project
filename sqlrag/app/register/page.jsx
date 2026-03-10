@@ -10,8 +10,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("Create account");
   let router=useRouter();
-
-  const url="http://localhost:8080/auth/register";
+const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/register`
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
