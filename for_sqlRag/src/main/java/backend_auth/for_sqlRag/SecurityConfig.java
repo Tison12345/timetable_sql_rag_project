@@ -26,7 +26,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter) throws Exception
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtFilter jwtFilter,RateLimitingFilter rateLimitingFilter) throws Exception
     {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//                .addFilterBefore(rateLimitingFilter,JwtFilter.class) ;
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter,JwtFilter.class) ;
 
 
         return http.build();

@@ -24,11 +24,11 @@ public class EmailServiceImp implements EmailService {
 
         try{
             SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
-
+            String link = "http://localhost:3000/verify-email?token=" + emailDetails.getToken();
             simpleMailMessage.setFrom(sender);
             simpleMailMessage.setTo(emailDetails.getReceiverEmail());
-            simpleMailMessage.setText("Click this link to verify. You will be directed to login page");
-            simpleMailMessage.setText("preetham parthiban");
+            simpleMailMessage.setText(
+                    "Click this link to verify your email: " + link );
 
             javaMailSender.send(simpleMailMessage);
             return new ResponseEntity<>("Email sent Successfully", HttpStatus.OK);

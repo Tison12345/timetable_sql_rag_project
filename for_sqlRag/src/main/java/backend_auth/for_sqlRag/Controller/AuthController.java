@@ -5,6 +5,7 @@ import backend_auth.for_sqlRag.Service.Imp.GoogleTokenService;
 import backend_auth.for_sqlRag.Service.Imp.UserService;
 import backend_auth.for_sqlRag.Utils.CookieGenerator;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
+import backend_auth.for_sqlRag.Utils.VerifyEmail;
 import backend_auth.for_sqlRag.models.EmailDetails;
 import backend_auth.for_sqlRag.models.Users;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class AuthController {
     private final GoogleTokenService googleTokenService;
     private final CookieGenerator cookieGenerator;
     private final EmailServiceImp emailServiceImp;
+    private final VerifyEmail verifyEmail;
 
 
 
@@ -80,6 +83,8 @@ public class AuthController {
         if(!passwordEncoder.matches(hashedPassword, userRegister.getPassword())){
             return new ResponseEntity<>("Invalid password",HttpStatus.NOT_FOUND);
         }
+        System.out.println(userService.isVerified(email));
+
         if(!userService.isVerified(email))
         {
 //            emailDetails.builder().receiverEmail(email).token(generateVerificationToken.generateVerificationToken()).build();
@@ -143,7 +148,7 @@ public class AuthController {
         if (payload == null || !payload.getEmailVerified()) {
             return new ResponseEntity<>("Invalid Google login", HttpStatus.UNAUTHORIZED);
         }
-        System.out.println(payload);
+
 
         String email = payload.getEmail();
 
@@ -172,17 +177,33 @@ public class AuthController {
     }
 
     @PostMapping("/verify-Email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String email)
+    public ResponseEntity<?> verifyEmail(@RequestBody Map<String,String> body)
     {
+        String email= body.get("email");
         EmailDetails emailDetails=new EmailDetails();
-
-//       emailDetails.builder().token(generateVerificationToken.generateVerificationToken()).receiverEmail(email).build();
-//       return emailServiceImp.sendEmail(emailDetails);
-        return null;
+       emailDetails = emailDetails.builder().token(verifyEmail.emailVerificationToken(email)).receiverEmail(email).build();
+       return emailServiceImp.sendEmail(emailDetails);
+//        return null;
     }
 
-    @GetMapping("/verify-token")
+    @PostMapping("/verify-token")
     public ResponseEntity<?> getToken(@RequestParam String token){
-   return null;
+       if(token==null)
+       {
+           return new ResponseEntity<>("token is null",HttpStatus.UNAUTHORIZED);
+       }
+       if(!verifyEmail.validateToken(token))
+       {
+           return new ResponseEntity<>("Invalid Token",HttpStatus.UNAUTHORIZED);
+       }
+       Optional<Users> user=userService.getUser(verifyEmail.extractEmail(token));
+       user.get().setIsVerified(true);
+       userService.registerUser(user.get());
+
+
+       return new ResponseEntity<>("Token verified",HttpStatus.OK);
+
+
+
     }
 }

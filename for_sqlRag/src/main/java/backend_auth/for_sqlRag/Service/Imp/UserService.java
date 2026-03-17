@@ -31,8 +31,7 @@ public class UserService {
 
     public boolean isVerified(String email){
         Optional<Users> user=userRepository.findByEmail(email);
-        System.out.println(user);
-        return true;
+        return user.get().getIsVerified();
 
     }
 

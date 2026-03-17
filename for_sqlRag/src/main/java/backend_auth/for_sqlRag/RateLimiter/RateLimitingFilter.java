@@ -11,7 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @AllArgsConstructor
-//@Component
+@Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final RateLimiterc rateLimiterc;
