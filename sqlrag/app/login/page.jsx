@@ -6,73 +6,59 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("Welcome back");
   const [googleReady, setGoogleReady] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
-    const googleurl=`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/google/token`;
-    const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/login`;
+  const googleurl = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/google/token`;
+  const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/login`;
   const router = useRouter();
 
-  // Load Google GSI script once on mount
- useEffect(() => {
-  const script = document.createElement("script");
-  script.src = "https://accounts.google.com/gsi/client";
-  script.async = true;
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
 
-  script.onload = () => {
-    if (!window.google) return;
+    script.onload = () => {
+      if (!window.google) return;
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+      });
+      setGoogleReady(true);
+    };
 
-    window.google.accounts.id.initialize({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      callback: handleCredentialResponse,
-    });
-
-    setGoogleReady(true);
-  };
-
-  document.body.appendChild(script);
-}, []);
-
-  function initGoogle() {
-    const poll = setInterval(() => {
-      if (window.google?.accounts?.id) {
-        clearInterval(poll);
-        window.google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-          cancel_on_tap_outside: true,
-        });
-        setGoogleReady(true);
-      }
-    }, 100);
-  }
+    document.body.appendChild(script);
+  }, []);
 
   function handleCredentialResponse(response) {
     const token = response.credential;
-     console.log("Sending token to backend for verification...");
-    console.log("Google token received:", token);
-    console.log("Sending token to backend for verification...");
-    
-     axios.post(googleurl, { token }, { withCredentials: true })
-      .then(() =>{
-        console.log("Google login successful")
-
-        router.push("/chat");
-      })
+    axios
+      .post(googleurl, { token }, { withCredentials: true })
+      .then(() => router.push("/chat"))
       .catch((err) => console.log(err.response.data));
+  }
+
+
+  const handleVerifyEmail = () => {
+    axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/verify-Email`, { email }, { withCredentials: true })
+      .then(() => {
+        console.log("Verification email resent successfully");
+        setMsg("Verification email resent! Check your inbox.");
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        setMsg("Failed to resend verification email. Try again later.");
+      });
   }
 
   const handleGoogleLogin = () => {
     if (!googleReady || !window.google?.accounts?.id) return;
-
-    // Try One Tap prompt first
     window.google.accounts.id.prompt((notification) => {
-      // If One Tap is suppressed (e.g. user dismissed before), fall back to OAuth popup
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         const container = document.getElementById("g_id_hidden");
         if (container) {
@@ -94,18 +80,21 @@ export default function LoginPage() {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
-    console.log("login clicked")
-    axios.post(url, {
-      email: email,
-      password: password,
-    }, {
-      withCredentials: true,
-    }).then((response) => {
-      setMsg(response.data);
-      router.push("/chat");
-    }).catch((error) => {
-      console.log(error);
-    });
+
+    axios
+      .post(url, { email, password }, { withCredentials: true })
+      .then((response) => {
+        setMsg(response.data);
+        router.push("/chat");
+      })
+      .catch((error) => {
+        if (error.response.data?.toLowerCase() === "email not verified") {
+          setVerifying(true);                          
+          setMsg("Email Not verified");
+        } else {
+          console.log(error.response.data);
+        }
+      });
   };
 
   return (
@@ -116,17 +105,26 @@ export default function LoginPage() {
         <div className="grid" />
       </div>
 
-      <main className="card">
-        <h1 className="title">{msg}</h1>
-        <p className="sub">Sign in to continue</p>
+      <main className={`card ${verifying ? "card-error" : ""}`}>
+        <h1 className={`title ${verifying ? "title-error" : ""}`}>{msg}</h1>
+        <p className="sub">
+          {verifying
+            ? "Check your inbox and verify your email to continue"
+            : "Sign in to continue"}
+        </p>
 
-        {/* Hidden container used as fallback to trigger Google OAuth popup */}
         <div
           id="g_id_hidden"
-          style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, overflow: "hidden" }}
+          style={{
+            position: "absolute",
+            opacity: 0,
+            pointerEvents: "none",
+            width: 0,
+            height: 0,
+            overflow: "hidden",
+          }}
         />
 
-        {/* Google Login Button */}
         <button type="button" className="google-btn" onClick={handleGoogleLogin}>
           <svg className="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -147,7 +145,15 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={verifying ? "input-error" : ""}
+              required
+            />
           </div>
 
           <div className="field">
@@ -155,15 +161,37 @@ export default function LoginPage() {
               <label htmlFor="password">Password</label>
               <Link href="/forgot-password" className="forgot">Forgot?</Link>
             </div>
-            <input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={verifying ? "input-error" : ""}
+              required
+            />
           </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? <span className="spinner" /> : "Sign In"}
-          </button>
+          {/* ✅ Fixed: proper JSX ternary for the button */}
+          <button
+  type={verifying ? "button" : "submit"}
+  disabled={loading}
+  className={verifying ? "btn-error" : ""}
+  onClick={verifying ? handleVerifyEmail : undefined}
+>
+  {loading ? (
+    <span className="spinner" />
+  ) : verifying ? (
+    "Verify Email"
+  ) : (
+    "Sign In"
+  )}
+</button>
         </form>
 
-        <p className="footer">No account? <Link href="/register">Create one</Link></p>
+        <p className="footer">
+          No account? <Link href="/register">Create one</Link>
+        </p>
       </main>
 
       <style>{`
@@ -203,6 +231,12 @@ export default function LoginPage() {
           backdrop-filter: blur(20px);
           box-shadow: 0 32px 80px rgba(0,0,0,.5);
           animation: rise .55s cubic-bezier(.16,1,.3,1) both;
+          transition: border-color .3s, box-shadow .3s;
+        }
+        /* Red card glow when unverified */
+        .card-error {
+          border-color: rgba(220, 60, 60, 0.35);
+          box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(220,60,60,.15), 0 0 40px rgba(200,40,40,.08);
         }
         @keyframes rise { from { opacity:0; transform:translateY(24px); } }
 
@@ -210,7 +244,11 @@ export default function LoginPage() {
           font-family: 'Cormorant Garamond', serif;
           font-size:36px; font-weight:300;
           color:#f0ece4; line-height:1.1;
+          transition: color .3s;
         }
+        /* Red title */
+        .title-error { color: #e05555; }
+
         .sub { margin-top:7px; font-size:13.5px; color:rgba(255,255,255,.35); font-weight:300; }
 
         .google-btn {
@@ -270,6 +308,10 @@ export default function LoginPage() {
         input::placeholder { color:rgba(255,255,255,.2); }
         input:focus { border-color:rgba(200,169,110,.5); background:rgba(255,255,255,.08); }
 
+        /* Red input border when unverified */
+        input.input-error { border-color: rgba(220,60,60,.45); }
+        input.input-error:focus { border-color: rgba(220,60,60,.75); background:rgba(255,255,255,.08); }
+
         button[type="submit"] {
           margin-top:6px; width:100%; height:48px;
           background:linear-gradient(135deg,#c8a96e,#a07840);
@@ -278,10 +320,19 @@ export default function LoginPage() {
           font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; letter-spacing:.04em;
           cursor:pointer;
           display:flex; align-items:center; justify-content:center;
-          transition:opacity .2s, transform .15s;
+          transition: opacity .2s, transform .15s, background .3s;
         }
         button[type="submit"]:hover:not(:disabled) { opacity:.9; transform:translateY(-1px); }
         button[type="submit"]:disabled { opacity:.65; cursor:not-allowed; }
+
+        /* Red submit button when unverified */
+        button[type="submit"].btn-error {
+          background: linear-gradient(135deg, #c0392b, #922b21);
+          color: #fff;
+        }
+        button[type="submit"].btn-error:hover:not(:disabled) {
+          opacity: .88;
+        }
 
         .spinner {
           width:17px; height:17px;
