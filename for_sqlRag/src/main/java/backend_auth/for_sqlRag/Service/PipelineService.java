@@ -1,5 +1,6 @@
-package backend_auth.for_sqlRag.Service.Imp;
+package backend_auth.for_sqlRag.Service;
 
+import backend_auth.for_sqlRag.Dto.Query;
 import backend_auth.for_sqlRag.Dto.RagResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,10 @@ public class PipelineService {
 
     private final WebClient webClient ;
 
-    public RagResponse callPipeline(String message){
+    public RagResponse callPipeline(Query query){
         return webClient.post()
                 .uri("/process")
-                .bodyValue(Map.of("question",message))
+                .bodyValue(query)
                 .retrieve()
                 .bodyToMono(RagResponse.class)
                 .block();

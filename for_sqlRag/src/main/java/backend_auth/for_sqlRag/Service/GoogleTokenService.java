@@ -1,4 +1,4 @@
-package backend_auth.for_sqlRag.Service.Imp;
+package backend_auth.for_sqlRag.Service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;

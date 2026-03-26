@@ -1,7 +1,6 @@
-package backend_auth.for_sqlRag.Service.Imp;
+package backend_auth.for_sqlRag.Service;
 
 import backend_auth.for_sqlRag.models.EmailDetails;
-import backend_auth.for_sqlRag.Service.EmailService;
 import com.google.api.client.util.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

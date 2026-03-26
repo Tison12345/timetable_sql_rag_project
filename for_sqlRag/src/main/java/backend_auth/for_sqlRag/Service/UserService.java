@@ -1,4 +1,4 @@
-package backend_auth.for_sqlRag.Service.Imp;
+package backend_auth.for_sqlRag.Service;
 
 import backend_auth.for_sqlRag.Repository.UserRepository;
 import backend_auth.for_sqlRag.models.Users;
@@ -40,5 +40,10 @@ public class UserService {
     public Optional<Users> getUser(String email)
     {
         return userRepository.findByEmail(email);
+    }
+
+    public String getBranch(String email)
+    {
+        return email.substring(2,5).toLowerCase();
     }
 }

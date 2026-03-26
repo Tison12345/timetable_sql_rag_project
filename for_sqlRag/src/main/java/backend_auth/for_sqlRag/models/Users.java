@@ -28,4 +28,5 @@ public class Users {
     private String provider;
     private String provider_id;
     private Boolean isVerified;
+    private String branch;
 }

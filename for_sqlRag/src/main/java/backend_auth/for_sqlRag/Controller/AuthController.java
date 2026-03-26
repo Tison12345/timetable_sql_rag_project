@@ -1,8 +1,8 @@
 package backend_auth.for_sqlRag.Controller;
 
-import backend_auth.for_sqlRag.Service.Imp.EmailServiceImp;
-import backend_auth.for_sqlRag.Service.Imp.GoogleTokenService;
-import backend_auth.for_sqlRag.Service.Imp.UserService;
+import backend_auth.for_sqlRag.Service.EmailServiceImp;
+import backend_auth.for_sqlRag.Service.GoogleTokenService;
+import backend_auth.for_sqlRag.Service.UserService;
 import backend_auth.for_sqlRag.Utils.CookieGenerator;
 import backend_auth.for_sqlRag.Utils.JwtUtil;
 import backend_auth.for_sqlRag.Utils.VerifyEmail;
@@ -52,7 +52,7 @@ public class AuthController {
         String password=user.get("password");
         String salt=BCrypt.gensalt(12);
         String hashedPassword = BCrypt.hashpw(password,salt);
-
+        String branch= userService.getBranch(email);
         if(userService.isUserExist(email))
         {
             if(userService.isVerified(email))
@@ -61,7 +61,8 @@ public class AuthController {
             }
 
         }
-        userService.registerUser(Users.builder().email(email).password(hashedPassword).isVerified(false).provider_id("null").provider("local").build());
+
+        userService.registerUser(Users.builder().email(email).password(hashedPassword).isVerified(false).provider_id("null").provider("local").branch(branch).build());
 
         return new ResponseEntity<>("Successfully Registered",HttpStatus.OK);
     }
@@ -91,6 +92,8 @@ public class AuthController {
 //            emailServiceImp.sendEmail(emailDetails);
             return new ResponseEntity<>("Email Not verified",HttpStatus.UNAUTHORIZED);
         }
+
+
         String accessToken=jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
 
