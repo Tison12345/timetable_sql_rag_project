@@ -1,25 +1,34 @@
+import os
 import pandas as pd
 import sqlite3
-import os
 
+DATA_FOLDER = "data"   # folder where all CSVs are stored
 DB_PATH = "timetable.db"
-CSV_PATH = "data/Golden_Timetable_6th_Sem.csv"
 
-def load_csv_to_db():
-    if not os.path.exists(CSV_PATH):
-        print("❌ CSV file not found.")
-        return
 
-    df = pd.read_csv(CSV_PATH)
-
-    # 🔥 Remove unnamed columns
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-
+def load_all_csvs():
     conn = sqlite3.connect(DB_PATH)
-    df.to_sql("timetable", conn, if_exists="replace", index=False)
-    conn.close()
 
-    print("✅ Timetable cleaned and loaded successfully!")
+    for file in os.listdir(DATA_FOLDER):
+        if file.endswith(".csv"):
+            file_path = os.path.join(DATA_FOLDER, file)
+
+            # table name = filename without .csv
+            table_name = file.replace(".csv", "").lower()
+
+            print(f"Loading {file} → {table_name}")
+
+            df = pd.read_csv(file_path)
+
+            # Clean column names (important)
+            df.columns = [col.strip() for col in df.columns]
+
+            # Insert into SQLite
+            df.to_sql(table_name, conn, if_exists="replace", index=False)
+
+    conn.close()
+    print("✅ All timetables loaded successfully!")
+
 
 if __name__ == "__main__":
-    load_csv_to_db()
+    load_all_csvs()
