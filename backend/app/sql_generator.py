@@ -3,7 +3,7 @@ from app.gemini import call_gemini
 
 
 def generate_sql(question: str, table_name: str) -> str:
-    schema = get_schema()
+    schema = get_schema(table_name)
 
     # Convert schema to readable format
     schema_text = "\n".join(
