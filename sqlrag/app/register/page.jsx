@@ -9,6 +9,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("Create account");
+  const [isError, setIsError] = useState(false);
+
   let router=useRouter();
 const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/register`
   const handleSubmit = async (e) => {
@@ -19,16 +21,17 @@ const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/register`
         email: email,
         password: password
     }).then((res)=>{
-        
         setMsg(res.data);
         console.log(res.data);
         router.push("/login");
     }).catch((err)=>{
         console.log(err.response.data);
         setMsg(err.response.data);
-    })
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
+        setIsError(true);
+    }).finally(async () => {
+        await new Promise((r) => setTimeout(r, 1200));
+        setLoading(false);
+    });
   };
 
   return (
@@ -39,24 +42,24 @@ const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/register`
         <div className="grid" />
       </div>
 
-      <main className="card">
+      <main className={`card ${isError ? "card-error" : ""}`}>
         
 
-        <h1 className="title text-red-600">{msg}</h1>
+        <h1 className={`title ${isError ? "title-error" : ""}`}>{msg}</h1>
         <p className="sub">Begin your journey today</p>
 
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" placeholder="you@iiitdwd.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input id="email" type="email" placeholder="you@iiitdwd.ac.in" value={email} onChange={(e) => {setEmail(e.target.value); setIsError(false); setMsg("Create account")}} className={isError ? "input-error" : ""} required />
           </div>
 
           <div className="field">
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => {setPassword(e.target.value); setIsError(false); setMsg("Create account")}} className={isError ? "input-error" : ""} required />
           </div>
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className={isError ? "btn-error" : ""}>
             {loading ? <span className="spinner" /> : "Create Account"}
           </button>
         </form>
@@ -155,6 +158,22 @@ const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/register`
         }
         button:hover:not(:disabled) { opacity:.9; transform:translateY(-1px); }
         button:disabled { opacity:.65; cursor:not-allowed; }
+
+        /* Error States matching login page */
+        .card-error {
+          border-color: rgba(220, 60, 60, 0.35);
+          box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(220,60,60,.15), 0 0 40px rgba(200,40,40,.08);
+        }
+        .title-error { color: #e05555; }
+        input.input-error { border-color: rgba(220,60,60,.45); }
+        input.input-error:focus { border-color: rgba(220,60,60,.75); background:rgba(255,255,255,.08); }
+        button[type="submit"].btn-error {
+          background: linear-gradient(135deg, #c0392b, #922b21);
+          color: #fff;
+        }
+        button[type="submit"].btn-error:hover:not(:disabled) {
+          opacity: .88;
+        }
 
         .spinner {
           width:17px; height:17px;

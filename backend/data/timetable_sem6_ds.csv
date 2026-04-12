@@ -1,34 +1,317 @@
-Course Code,Course Name,Faculty Name,Semester,Class Type,Day,Start Time,End Time,Room,Basket ID,,,
-EC456,Data Security and Privacy,Dr. Girish Revadigar,6,Tutorial,Monday,12:15 PM,12:30 PM,C402,Basket 1,,,
-EC456,Basket 1 Elective,Dr. Dibyajyoti Guha,6,Lecture,Monday,2:00 PM,3:30 PM,C302,Basket 1,,,
-ASD351,Basket 3 Elective,Dr. Siddharth R,6,Lecture,Monday,5:30 PM,6:30 PM,C404,Basket 4,,,
-DS351,Basket 5 Elective,Dr. Pramod Yelmevad,6,Lecture,Tuesday,9:00 AM,10:30 AM,C303,Basket 5,,,
-DS351,Basket 2 Elective,Dr. Malay,6,Lecture,Tuesday,2:00 PM,3:30 PM,C204,Basket 5,,,
-DS308,Basket 1 Elective,Dr. Dibyajyoti Guha,6,Lecture,Tuesday,3:40 PM,5:10 PM,C302,Basket 1,,,
-DS308,Basket 5 Elective,Dr. Pramod Yelmevad,6,Lecture,Wednesday,9:00 AM,10:30 AM,C303,Basket 1,,,
-EC361,Data Security and Privacy,Dr. Girish Revadigar,6,Lecture,Wednesday,10:45 AM,12:15 PM,C402,Basket 4,,,
-EC456,Basket 4 Elective,Dr. Vivek,6,Lecture,Wednesday,2:00 PM,3:30 PM,C304,Basket 5,,,
-EC456,Basket 3 Elective,Dr. Siddharth R,6,Lecture,Wednesday,3:40 PM,5:10 PM,C404,Basket 5,,,
-ASD351,Basket 1 Elective,Dr. Dibyajyoti Guha,6,Lecture,Wednesday,5:30 PM,6:30 PM,C302,Basket 1,,,
-DS351,Data Security and Privacy,Dr. Girish Revadigar,6,Lecture,Thursday,9:00 AM,10:30 AM,C402,Basket 1,,,
-DS351,DevSecOps Lab,Dr. Sunil P V,6,Lab,Thursday,11:00 AM,1:15 PM,Lab-1,Basket 4,,,
-DS308,Basket 5 Elective,Dr. Pramod Yelmevad,6,Lecture,Thursday,12:15 PM,1:15 PM,C303,Basket 5,,,
-DS308,Basket 3 Elective,Dr. Siddharth R,6,Lecture,Thursday,2:00 PM,3:30 PM,C404,Basket 5,,,
-EC361,Basket 4 Elective,Dr. Vivek,6,Lecture,Thursday,3:40 PM,5:10 PM,C304,Basket 5,,,
-EC456,Basket 2 Elective,Dr. Malay,6,Lecture,Thursday,5:30 PM,6:30 PM,C204,Basket 1,,,
-EC456,Basket 2 Elective,Dr. Malay,6,Lecture,Friday,10:30 AM,12:30 PM,C204,Basket 1,,,
-ASD351,Basket 2 Elective,Dr. Malay,6,Lecture,Friday,3:40 PM,5:10 PM,C204,Basket 4,,,
-DS351,Basket 4 Elective,Dr. Vivek,6,Lecture,Friday,5:30 PM,6:30 PM,C304,Basket 5,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
-,,,,,,,,,,,,
+﻿Course Code,Course Name,Faculty Name,Semester,Class Type,Day,Start Time,End Time,Room,
+DS308,Data Security and Privacy,Dr. Girish Revadigar,6,Tutorial,Monday,12:15,1:15 PM,C004,
+"EC456
+	New
+	New
+	EC363
+	New
+	New
+	New","1 . Reinforcement Learning	
+2  . Computer Architecture for AI System	
+3 .  Software Design & Architecture	
+4 .CMOS RF Circuit Design	
+5 .Remote Sensing & Applications	
+6  .GPU Computing	
+7 . Explainable AI	","Dr. Dibyajyoti Guha
+Dr. Nataraj
+Dr. Vivek
+Dr.Rajesh Kumar
+Dr. Suil CK
+Dr. Pramod Yelmevad
+Dr. Siddharth  R",6,Lecture,Monday,2:00 PM,15:30,"C302
+C303
+C304
+C404
+C204
+C402
+C403",
+"CS205
+CS455
+CS458
+New","1. Graph Theory	
+2. Blockchain Technology	
+3. Natural Language Processing	
+4. Industrial IoT	","Dr. Anand B
+Dr. Rajendra 
+Dr. Krishnendu
+Dr. Prakash Pawar",6,Tutorial,Monday,17:30,18:30,"C302
+C304
+C002
+C402",
+"DS351
+DS452
+ASD353 + ASD354
+DS358
+DA353
+CS373
+DS357
+DA354
+DA355","1. Statistics for Health Technology 	
+2. Advanced Optimization Techniques 	
+3 .Quantum Hardware and Systems + .Quantum Hardware Physics	
+4. Deep Speech Processing	
+5. Cloud Computing and AI Services	
+6. DevSecOps	
+7. Large Language Model	
+8. Federated Learning	
+9. Mathematics for Modern Applications	","Dr. Ramesh 
+Dr. Utkarsh
+Dr. Aswath B
+Prof. S R M Prasanna
+Dr. Animesh
+Dr. Girish Revadigar & Dr. Shirshendu Layek
+Dr. Sunil S
+Dr. Sruthi 
+Prof. Arulalan Rajan",6,Lecture,Tuesday,09:00,10:30,"C402
+C404
+C302
+C405
+C303
+C403
+C204
+C304
+C205",
+"CS469
+New
+CS472
+CS464
+New","1. Virtualisation and Cloud Computing	
+2. Biometric Security and Forensics	
+3. Bioinformatics	
+4. Deep Learning for Computer Vision 	
+5. Device–Circuit Co-Design	","Dr. Malay
+Dr. Pavan
+Dr. Sunil P V
+Dr. Chinmayananda A
+Dr. Pankaj Kumar",6,Lecture,Tuesday,14:00,15:30,"C004
+C303
+C304
+C404
+C402",
+"EC456
+	New
+	New
+	EC363
+	New
+	New
+	New","Reinforcement Learning	
+Computer Architecture for AI Systems	
+Software Design & Architecture	
+CMOS RF Circuit Design	
+Remote Sensing & Applications	
+GPU Computing	
+Explainable AI	","Dr. Dibyajyoti Guha
+Dr. Nataraj
+Dr. Vivek
+Dr.Rajesh Kumar
+Dr. Suil CK
+Dr. Pramod Yelmevad
+Dr. Siddharth  R",6,Lecture,Tuesday,15:40,17:10,"C302
+C303
+C304
+C404
+C204
+C402
+C403",
+"DS351
+DS452
+ASD353 + ASD354
+DS358
+DA353
+CS373
+DS357
+DA354
+DA355","1. Statistics for Health Technology 	
+2. Advanced Optimization Techniques 	
+3 .Quantum Hardware and Systems + .Quantum Hardware Physics	
+4. Deep Speech Processing	
+5. Cloud Computing and AI Services	
+6. DevSecOps	
+7. Large Language Model	
+8. Federated Learning	
+9. Mathematics for Modern Applications	","Dr. Ramesh 
+Dr. Utkarsh
+Dr. Aswath B
+Prof. S R M Prasanna
+Dr. Animesh
+Dr. Girish Revadigar & Dr. Shirshendu Layek
+Dr. Sunil S
+Dr. Sruthi 
+Prof. Arulalan Rajan",6,Lecture,Wednesday,09:00,10:30,"C402
+C404
+C302
+C405
+C303
+C403
+C204
+C304
+C205",
+DS308,Data Security and Privacy,Dr. Girish Revadigar,6,Lecture,Wednesday,10:45,12:15,C004,
+"ASD351
+New
+EC361","1. Design Thinking and Innovation	
+2. Full Stack Development II	
+3. Introduction to 5G	","Dr. Sandesh P
+Dr. Manjunath 
+Dr. Jagadeesha R Bhat",6,Lecture,Wednesday,14:00,15:30,"C302
+Online
+[""C402, 
+L207, L208""]",
+"CS205
+CS455
+CS458
+New","1. Graph Theory	
+2. Blockchain Technology	
+3. Natural Language Processing	
+4. Industrial IoT	","Dr. Anand B
+Dr. Rajendra 
+Dr. Krishnendu
+Dr. Prakash Pawar",6,Lecture,Wednesday,15:40,17:10,"C302
+C304
+C002
+C402",
+"EC456
+	New
+	New
+	EC363
+	New
+	New
+	New","1 . Reinforcement Learning	
+2  . Computer Architecture for AI System	
+3 .  Software Design & Architecture	
+4 .CMOS RF Circuit Design	
+5 .Remote Sensing & Applications	
+6  .GPU Computing	
+7 . Explainable AI	","Dr. Dibyajyoti Guha
+Dr. Nataraj
+Dr. Vivek
+Dr.Rajesh Kumar
+Dr. Suil CK
+Dr. Pramod Yelmevad
+Dr. Siddharth  R",6,Tutorial,Wednesday,17:30,18:30,"C302
+C303
+C304
+C404
+C204
+C402
+C403",
+DS308,Data Security and Privacy,Dr. Girish Revadigar,6,Lecture,Thursday,09:00,10:30,C004,
+"DS351
+DS452
+ASD353 + ASD354
+DS358
+DA353
+CS373
+DS357
+DA354
+DA355","1. Statistics for Health Technology 	
+2. Advanced Optimization Techniques 	
+3 .Quantum Hardware and Systems + 4 .Quantum Hardware Physics	
+5. Deep Speech Processing	
+6. Cloud Computing and AI Services	
+7. DevSecOps	
+8. Large Language Model	
+9. Federated Learning	
+10. Mathematics for Modern Applications	","Dr. Ramesh 
+Dr. Utkarsh
+Dr. Aswath B
+Prof. S R M Prasanna
+Dr. Animesh
+Dr. Girish Revadigar & Dr. Shirshendu Layek
+Dr. Sunil S
+Dr. Sruthi 
+Prof. Arulalan Rajan",6,Tutorial,Thursday,12:15,13:15,"C402
+C404
+C302
+C405
+C303
+C403
+C204
+C304
+C205",
+"CS205
+CS455
+CS458
+New","1. Graph Theory	
+2. Blockchain Technology	
+3. Natural Language Processing	
+4. Industrial IoT	","Dr. Anand B
+Dr. Rajendra 
+Dr. Krishnendu
+Dr. Prakash Pawar",6,Lecture,Thursday,14:00,15:30,"C302
+C304
+C002
+C402",
+"ASD351
+New
+EC361","1. Design Thinking and Innovation	
+2. Full Stack Development II	
+3. Introduction to 5G	","Dr. Sandesh P
+Dr. Manjunath 
+Dr. Jagadeesha R Bhat",6,Lecture,Thursday,15:45,17:10,"C302
+Online
+[""C402, 
+L207, L208""]",
+"CS469
+New
+CS472
+CS464
+New","1. Virtualisation and Cloud Computing	
+2. Biometric Security and Forensics	
+3. Bioinformatics	
+4. Deep Learning for Computer Vision 	
+5. Device–Circuit Co-Design	","Dr. Malay
+Dr. Pavan
+Dr. Sunil P V
+Dr. Chinmayananda A
+Dr. Pankaj Kumar",6,Tutorial,Thursday,17:30,18:30,"C004
+C303
+C304
+C404
+C402",
+Basket 4 (only Introduction to 5G Lab ),Introduction to 5G Lab,Dr. Jagadeesha R Bha,6,Lecture,Friday,10:30,12:30,"[""C402, 
+L207, L208""]",
+"CS469
+New
+CS472
+CS464
+New","1. Virtualisation and Cloud Computing	
+2. Biometric Security and Forensics	
+3. Bioinformatics	
+4. Deep Learning for Computer Vision 	
+5. Device–Circuit Co-Design	","Dr. Malay
+Dr. Pavan
+Dr. Sunil P V
+Dr. Chinmayananda A
+Dr. Pankaj Kumar",6,Lecture,Friday,15:30,17:10,"C004
+C303
+C304
+C404
+C402",
+"ASD351
+New
+EC361","1. Design Thinking and Innovation	
+2. Full Stack Development II	
+3. Introduction to 5G	","Dr. Sandesh P
+Dr. Manjunath 
+Dr. Jagadeesha R Bhat",6,Lecture,Friday,17:30,18:30,"C302
+Online
+[""C402, 
+L207, L208""]",
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,

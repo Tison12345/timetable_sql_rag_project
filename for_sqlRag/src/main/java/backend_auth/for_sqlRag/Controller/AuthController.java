@@ -50,15 +50,15 @@ public class AuthController {
         // send it through repo
         String email= user.get("email");
         String password=user.get("password");
+
         String salt=BCrypt.gensalt(12);
         String hashedPassword = BCrypt.hashpw(password,salt);
+
         String branch= userService.getBranch(email);
+
         if(userService.isUserExist(email))
         {
-            if(userService.isVerified(email))
-            {
-                return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
-            }
+            return new ResponseEntity<>("Already User Present Login",HttpStatus.CONFLICT);
 
         }
 
@@ -183,6 +183,10 @@ public class AuthController {
     public ResponseEntity<?> verifyEmail(@RequestBody Map<String,String> body)
     {
         String email= body.get("email");
+        boolean bo= userService.isVerified(email);
+        if(bo){
+            return new ResponseEntity<>("User already Registered",HttpStatus.BAD_REQUEST);
+        }
         EmailDetails emailDetails=new EmailDetails();
        emailDetails = emailDetails.builder().token(verifyEmail.emailVerificationToken(email)).receiverEmail(email).build();
        return emailServiceImp.sendEmail(emailDetails);

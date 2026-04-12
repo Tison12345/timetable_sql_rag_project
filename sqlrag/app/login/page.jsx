@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [msg, setMsg] = useState("Welcome back");
   const [googleReady, setGoogleReady] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const googleurl = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/google/token`;
   const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/auth/login`;
@@ -88,11 +89,15 @@ export default function LoginPage() {
         router.push("/chat");
       })
       .catch((error) => {
-        if (error.response.data?.toLowerCase() === "email not verified") {
+        if (error.response?.data?.toLowerCase() === "email not verified") {
           setVerifying(true);                          
+          setIsError(false);
           setMsg("Email Not verified");
         } else {
-          console.log(error.response.data);
+          console.log(error.response?.data);
+          setMsg(error.response?.data || "Login failed");
+          setVerifying(false);
+          setIsError(true);
         }
       });
   };
@@ -105,11 +110,13 @@ export default function LoginPage() {
         <div className="grid" />
       </div>
 
-      <main className={`card ${verifying ? "card-error" : ""}`}>
-        <h1 className={`title ${verifying ? "title-error" : ""}`}>{msg}</h1>
+      <main className={`card ${verifying || isError ? "card-error" : ""}`}>
+        <h1 className={`title ${verifying || isError ? "title-error" : ""}`}>{msg}</h1>
         <p className="sub">
           {verifying
             ? "Check your inbox and verify your email to continue"
+            : isError 
+            ? "Please check your credentials and try again"
             : "Sign in to continue"}
         </p>
 
@@ -150,8 +157,8 @@ export default function LoginPage() {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={verifying ? "input-error" : ""}
+              onChange={(e) => {setEmail(e.target.value); setIsError(false); setVerifying(false); setMsg("Welcome back");}}
+              className={verifying || isError ? "input-error" : ""}
               required
             />
           </div>
@@ -166,8 +173,8 @@ export default function LoginPage() {
               type="password"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={verifying ? "input-error" : ""}
+              onChange={(e) => {setPassword(e.target.value); setIsError(false); setVerifying(false); setMsg("Welcome back");}}
+              className={verifying || isError ? "input-error" : ""}
               required
             />
           </div>
@@ -176,7 +183,7 @@ export default function LoginPage() {
           <button
   type={verifying ? "button" : "submit"}
   disabled={loading}
-  className={verifying ? "btn-error" : ""}
+  className={verifying || isError ? "btn-error" : ""}
   onClick={verifying ? handleVerifyEmail : undefined}
 >
   {loading ? (

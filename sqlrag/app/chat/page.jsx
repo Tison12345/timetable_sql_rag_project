@@ -16,29 +16,29 @@ export default function Home() {
     "What is my last class today?",
     "Which rooms are used today?"
   ];
-  const url=`${process.env.NEXT_PUBLIC_BACKENDURL}/chat/ask`
+  const url = `${process.env.NEXT_PUBLIC_BACKENDURL}/chat/ask`
 
-  
+
   const askBackend = async () => {
-  if (!question) return;
+    if (!question) return;
 
-  setLoading(true);
-  setResponse(null);
+    setLoading(true);
+    setResponse(null);
 
-  try {
-    const res = await axios.post(url, { question }, { withCredentials: true });
-    setResponse(res.data);
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      await axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/refresh`, {}, { withCredentials: true });
+    try {
+      const res = await axios.post(url, { question }, { withCredentials: true });
+      setResponse(res.data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        await axios.post(`${process.env.NEXT_PUBLIC_BACKENDURL}/auth/refresh`, {}, { withCredentials: true });
 
-      const retry = await axios.post(url, { question }, { withCredentials: true });
-      setResponse(retry.data);
+        const retry = await axios.post(url, { question }, { withCredentials: true });
+        setResponse(retry.data);
+      }
     }
-  }
 
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   const handleQuickQuery = (query) => {
     setQuestion(query);
