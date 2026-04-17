@@ -1,10 +1,12 @@
 import os
 import pandas as pd
 import sqlite3
+from config import DB_PATH
 
-DATA_FOLDER = "data"   # folder where all CSVs are stored
-DB_PATH = "timetable.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+DATA_FOLDER = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
+DB_PATH = os.path.join(BASE_DIR, "timetable.db")
 
 def load_all_csvs():
     conn = sqlite3.connect(DB_PATH)

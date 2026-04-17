@@ -1,7 +1,7 @@
 from app.sql_generator import generate_sql
 from app.executor import run_sql
 from app.explain import generate_explanation
-
+from app.config import DB_PATH
 
 def ask_question(question: str, branch: str, semester: int):
 

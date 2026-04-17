@@ -68,7 +68,7 @@ SQL:
 
     # Clean accidental markdown if model adds it
     response = response.replace("```sql", "").replace("```", "").strip()
-
+    print(response)
     return response
 
 

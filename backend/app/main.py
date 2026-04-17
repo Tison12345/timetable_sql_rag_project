@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.pipeline import ask_question
 from fastapi.middleware.cors import CORSMiddleware
+from app.config import DB_PATH
 
 app = FastAPI()
 
